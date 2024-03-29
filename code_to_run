@@ -1,5 +1,11 @@
+install.packages("tidyverse")
+library(tidyverse)
+
+# set working directory
+setwd("~/2024_data_profiles/")
+
 # Get a list of all .sf files in the directory
-file_list <- list.files("~/singleM_outputs/",pattern="\\_profile.tsv$")
+file_list <- list.files("2024_data_profiles/",pattern="\\_profile.tsv$")
 
 # Use purrr::map() to read all files into a list of dataframes
 data_list <- map(file_list, ~read.delim(.x, header = TRUE) %>% dplyr::select(taxonomy, coverage))
@@ -13,8 +19,10 @@ joined_data <- reduce(data_list, full_join, by = "taxonomy")
 
 # Extract data_list names
 sam_names <- names(data_list)
+
 # Only keep the sam_names text to the left of the second "_"
 sam_names <- str_extract(names(data_list), "^[^_]+_[^_]+")
+
 # Rename coverage columns to data_list names
 names(joined_data)[grep("coverage", names(joined_data))] <- sam_names
 
@@ -49,13 +57,12 @@ joined_data$Species[is.na(joined_data$Species)] <- "s__unclassified"
 phylum <- joined_data %>% group_by(Root, Domain, Phylum) %>% summarise(across(1:39, sum, na.rm = TRUE)) %>% ungroup()
 
 # Write table for Phylum coverages
-write.table(phylum, "Phylum_SingleM.tsv", row.names = FALSE, quote = F, sep="\t")
+write.table(phylum, "~/Phylum_SingleM.tsv", row.names = FALSE, quote = F, sep="\t")
 
 
 # For Class-level Agglom
 class <- joined_data %>% group_by(Root, Domain, Phylum, Class) %>% summarise(across(1:39, sum, na.rm = TRUE)) %>% ungroup()
 
 # Write table for Class coverages
-write.table(class, "Class_SingleM.tsv", row.names = FALSE, quote = F, sep="\t")
-
+write.table(class, "~/Class_SingleM.tsv", row.names = FALSE, quote = F, sep="\t")
 
