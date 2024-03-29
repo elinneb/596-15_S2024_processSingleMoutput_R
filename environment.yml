@@ -1,11 +1,6 @@
 name: 596-15_analyses
 channels:
   - conda-forge
-  - bioconda
-  - defaults
 dependencies:
-  - fastqc
-  - multiqc
-  - singlem
-  - numpy
-
+  - python
+  - pip
